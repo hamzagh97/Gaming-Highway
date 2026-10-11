@@ -1,0 +1,215 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens: a black and charcoal dark theme with the logo's yellow as the
+ * single accent (white and yellow on black, like the logo). Every colour,
+ * radius, shadow and animation used by the components comes from this block,
+ * so re-skinning the store means editing it only.
+ *
+ * Surfaces from darkest to lightest: page < surface (cards, header) < surface-muted
+ * (inputs, hover, chips inside cards).
+ */
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* Logo yellow: calls to action, active states, badges, links (dark text on top) */
+  --color-brand: #f7e000;
+  --color-brand-dark: #d4bd00;
+  --color-brand-soft: #2a2700;
+  --color-on-brand: #121000;
+
+  /* "primary" is the same yellow, for filled controls and borders. */
+  --color-primary: var(--color-brand);
+  --color-primary-dark: var(--color-brand-dark);
+  /* Neutral hover/tint background that sits one step above "surface" */
+  --color-primary-soft: #222222;
+
+  /* Neutrals. "ink" is the text colour, so it is light here. */
+  --color-page: #0a0a0a;
+  --color-surface: #171717;
+  --color-surface-muted: #262626;
+  --color-ink: #f5f5f5;
+  --color-ink-soft: #bdbdbd;
+  --color-ink-muted: #8c8c8c;
+  --color-line: #2c2c2c;
+  --color-line-strong: #404040;
+
+  /* Links and info text */
+  --color-accent: var(--color-brand);
+  --color-accent-dark: #fff27a;
+  --color-accent-soft: #2a2700;
+
+  /* Status */
+  --color-success: #34d399;
+  --color-success-soft: #0f2a22;
+  --color-danger: #f43f5e;
+  --color-danger-soft: #33141d;
+
+  /* Platform badges */
+  --color-platform-ps5: #2563c9;
+  --color-platform-xbox: #17883d;
+  --color-platform-pc: #3f3f46;
+
+  /* Shape and depth */
+  --radius-card: 0.875rem;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.25);
+  --shadow-pop: 0 20px 50px -12px rgb(0 0 0 / 0.7);
+
+  /* Layout */
+  --container-page: 100rem;
+
+  /* Motion */
+  --animate-fade-in: fade-in 0.2s ease-out both;
+  --animate-pop: pop 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-up: slide-up 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in-right: slide-in-right 0.3s cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+  --animate-slide-in-left: slide-in-left 0.3s cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-float: float 4s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-3deg);
+    }
+    50% {
+      transform: translateY(-12px) rotate(3deg);
+    }
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-padding-top: 8rem;
+    /* Dark native controls: scrollbars, select menus, date pickers */
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::after,
+  ::before {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Shining sweep for highlighted buttons (e.g. "Browse games"). */
+@keyframes shine-sweep {
+  0%,
+  55% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(130%);
+  }
+}
+
+@utility shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgb(255 255 255 / 0.55) 50%,
+      transparent 70%
+    );
+    transform: translateX(-130%);
+    animation: shine-sweep 3s ease-in-out infinite;
+  }
+}
