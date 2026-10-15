@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { HealthModule } from './health/health.module';
+import { PlatformsModule } from './platforms/platforms.module';
+import { GenresModule } from './genres/genres.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { HealthModule } from './health/health.module';
       },
     }),
     HealthModule,
+    PlatformsModule,
+    GenresModule,
   ],
   controllers: [AppController],
   providers: [AppService],

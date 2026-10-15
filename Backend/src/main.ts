@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AllExceptionsFilter } from './common/filters/all-exceptions';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -16,6 +17,9 @@ async function bootstrap() {
       transform: true, // turn query strings into real numbers, etc.
     }),
   );
+
+  app.setGlobalPrefix('api/v1', { exclude: ['health'] });
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   const config = app.get(ConfigService);
 
