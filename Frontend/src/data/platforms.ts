@@ -1,8 +1,20 @@
 import type { Genre, Platform } from "@/types";
 
 export const platforms: Platform[] = [
-  { slug: "ps5", name: "PlayStation 5", shortName: "PS5", emoji: "🎮", hue: 215 },
-  { slug: "xbox", name: "Xbox Series X|S", shortName: "Xbox", emoji: "🕹️", hue: 135 },
+  {
+    slug: "ps5",
+    name: "PlayStation 5",
+    shortName: "PS5",
+    emoji: "🎮",
+    hue: 215,
+  },
+  {
+    slug: "xbox",
+    name: "Xbox Series X|S",
+    shortName: "Xbox",
+    emoji: "🕹️",
+    hue: 135,
+  },
   { slug: "pc", name: "PC", shortName: "PC", emoji: "🖥️", hue: 175 },
 ];
 

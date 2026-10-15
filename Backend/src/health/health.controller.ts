@@ -8,4 +8,10 @@ export class HealthController {
   check() {
     return { status: 'ok' };
   }
+
+  //test
+  // @Get('boom')
+  // boom() {
+  //   throw new Error('secret database password');
+  // }
 }
