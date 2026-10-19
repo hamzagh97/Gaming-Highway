@@ -1,7 +1,8 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { PlatformsService } from './platforms.service';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags, ApiNotFoundResponse } from '@nestjs/swagger';
 import { PlatformDto } from './dto/platform.dto';
+import { ErrorResponseDto } from '../common/dto/error-response.dto';
 
 @ApiTags('platforms')
 @Controller('platforms')
@@ -15,6 +16,10 @@ export class PlatformsController {
   }
 
   @ApiOkResponse({ type: PlatformDto })
+  @ApiNotFoundResponse({
+    description: 'No platform with this slug.',
+    type: ErrorResponseDto,
+  })
   @Get(':slug')
   findOne(@Param('slug') slug: string) {
     return this.platformsService.findOne(slug);

@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { HealthModule } from './health/health.module';
 import { PlatformsModule } from './platforms/platforms.module';
 import { GenresModule } from './genres/genres.module';
+import { validate } from './config/env.validation';
+import { randomUUID } from 'node:crypto';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, validate }),
     LoggerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -26,11 +26,16 @@ import { GenresModule } from './genres/genres.module';
             serializers: {
               req: (req: { method: string; url?: string }) => ({
                 method: req.method,
-                url: req.url,
+                url: req.url?.split('?')[0],
               }),
               res: (res: { statusCode: number }) => ({
                 statusCode: res.statusCode,
               }),
+            },
+            genReqId: (req, res) => {
+              const id = randomUUID();
+              res.setHeader('X-Request-Id', id);
+              return id;
             },
           },
         };
@@ -40,7 +45,7 @@ import { GenresModule } from './genres/genres.module';
     PlatformsModule,
     GenresModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
