@@ -1,0 +1,3 @@
+# Shell scripts must keep LF line endings on every machine (bash on Linux,
+# macOS, WSL and Docker fails on CR characters, even when Git Bash on Windows does not).
+*.sh text eol=lf
