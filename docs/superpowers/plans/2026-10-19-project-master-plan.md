@@ -20,6 +20,7 @@
 - Nothing is called done without a command's real output shown.
 - Everything Claude gives or reviews is checked for inputs, security, failures, environments, operations and tests, and tested in a throw-away copy before it is shown.
 - Use the framework's own security feature before writing your own.
+- **Evidence, not opinion (owner's rule, 2026-10-21):** every solution Claude gives is backed by (1) a source found before proposing it: official docs first, the library's source code when the docs are silent, then well-known engineering sources, with blogs labelled as secondary; and (2) a run that proves it, including breaking the code on purpose. When there are options, they are compared on the same scenarios in one table. Claude says which parts are evidence and which are its judgment, and says plainly when the evidence is thin.
 
 **Note on this plan's format.** The writing-plans skill wants full test code inside every step. Here the owner types the code, so each task lists the **test cases** (input and expected result) and the **verify command**. Claude gives a tested snippet or hint when the owner reaches that step, not before.
 
@@ -50,6 +51,8 @@
 **Which path:** a question, with a throw-away answer, is a *spike* (2 to 3 sentences, then a nod). A change to code that exists is *bounded* (short design in chat). A new subsystem is *architectural* (written spec, then plan). In doubt, take the heavier path. Approval is always required; only the size of the document changes.
 
 **Teach-back (optional but recommended):** at the end of each task, say in 3 sentences what the code does and why. If you can't, we go back over that part before the next task.
+
+**"What does this test NOT check?" (every test, added 2026-10-21):** after each test passes, the owner and Claude answer this question in writing before moving on: every value of a fixed set (all three platforms, not one), every field of an object, the empty and wrong inputs. Claude must also say when it simplified a test for teaching, and offer the stronger version next to it. Reason: in T1 the first plan only checked `ps5` and only slugs, and the owner caught both gaps. Anything Claude teaches can also be checked against the official docs (for Jest: jestjs.io) and by breaking the code on purpose.
 
 ### Part A2: Security checklist (every slice, at the Review step)
 
@@ -115,13 +118,13 @@ Each phase: **status**, **decide first**, **slices** (each ends in a pull reques
 
 ### Phase 2: Database and Prisma
 - **Decide first:** confirm Prisma.
-- **Slices:** (2a) Prisma, schema, first migration, `PrismaModule`; (2b) seed data in `Backend/prisma/seed-data/`; (2c) platforms read from the database, tested against a real Postgres through Testcontainers, locally and in CI.
+- **Slices:** (2a) Prisma, schema (`Platform` and `Genre` keep `emoji` and `hue` and get `archivedAt`), first migration, `PrismaModule`; (2b) seed data in `Backend/prisma/seed-data/`; (2c) platforms read from the database, tested against a real Postgres through Testcontainers, locally and in CI.
 - **Security:** the app connects with a database user that has only the rights it needs (migrations use the owner); no SQL built from raw input; seed data never in production.
 - **Proof:** 10 games in Prisma Studio; `GET /api/v1/platforms` served from Postgres; e2e green against Testcontainers in CI.
 
 ### Phase 3: Catalog API and first frontend connection
 - **Decide first:** domain and hosting provider; what Next.js may cache.
-- **Slices:** (3a) `GET /products` with filters and a DTO; (3b) product detail, related, home; (3c) frontend `api.ts` and one page switched; (3d) the remaining pages, SEO, generated types; (3e) first staging deploy, with `trust proxy`, a global rate limit, Sentry (no cookies or headers sent to it) and secrets in the host's secret store.
+- **Slices:** (3a) `GET /products` with filters and a DTO; (3b) product detail, related, home; (3c) frontend `api.ts` and one page switched; (3d) the remaining pages, SEO, generated types, platform badges drawn from data (`hue`) so a new platform needs no frontend code; (3e) first staging deploy, with `trust proxy`, a global rate limit, Sentry (no cookies or headers sent to it) and secrets in the host's secret store.
 - **Security:** a maximum `limit` per page and a maximum length for `q`; CORS only for the real frontend.
 - **Proof:** filter and sort e2e tests; home, browse and product pages show API data; CORS works from the staging frontend; the rate limiter sees different IPs for different visitors on staging.
 
@@ -161,7 +164,7 @@ Each phase: **status**, **decide first**, **slices** (each ends in a pull reques
 
 ### Phase 9: Admin and extras (split)
 - **Decide first:** where the admin screens live (the old plan recommends protected `/admin` pages in Next.js).
-- **Slices:** (9a) admin screens and endpoints for games, listings, prices, promo codes and orders, with the audit log; (9b) admin two-factor, dashboard data, low-stock alert; (9c) image upload and the real pages for the footer links; (9d) reviews, newsletter, banners.
+- **Slices:** (9a) admin screens and endpoints for games, listings, prices, promo codes, orders, platforms and genres (enable or disable, never delete), with the audit log; (9b) admin two-factor, dashboard data, low-stock alert; (9c) image upload and the real pages for the footer links; (9d) reviews, newsletter, banners.
 - **Security:** an admin without two-factor can't reach key data; every admin action has an audit row; image upload checks type and size; nothing fetches a URL the user gives without a check.
 - **Proof:** an audit row for every admin action; the two-factor test.
 
@@ -211,12 +214,12 @@ Each phase: **status**, **decide first**, **slices** (each ends in a pull reques
 
 | Service call | Expected |
 |--------------|----------|
-| `PlatformsService.findAll()` | 3 platforms with slugs `ps5`, `xbox`, `pc` |
-| `findOne('ps5')` | the PlayStation 5 object |
+| `PlatformsService.findAll()` | growth-proof checks (decided 2026-10-21, because platforms may be added someday): the platforms we already sell are still there (`arrayContaining`, extra ones allowed); no duplicate slugs; every platform has the five fields as the right types. An exact-list test was tried and dropped: it fails on a normal "add a platform" change. |
+| `findOne('ps5')`, `findOne('xbox')`, `findOne('pc')` (every value, not just one) | `name` is `PlayStation 5`, `Xbox Series X\|S`, `PC` |
 | `findOne('nope')` | throws `NotFoundException` |
 | `findOne('PS5')` | throws (slugs are lower case; decide it and test it, don't assume) |
 | `findOne('')` | throws |
-| `GenresService.findAll()` | 8 genres, each slug unique |
+| `GenresService.findAll()` | the same three growth-proof checks: the 8 genres we have are still there (extra ones allowed), no duplicate slugs, every genre has `slug`, `name`, `emoji` as text |
 
 **Check Claude will make:** `findAll()` returns the service's own array. If a caller changes it, the data changes for every request. Decide: accept it (hard-coded data until Phase 2) or return a copy, and write the test for your choice.
 **Acceptance criteria:**
@@ -272,9 +275,9 @@ Each phase: **status**, **decide first**, **slices** (each ends in a pull reques
 | Request | Expected |
 |---------|----------|
 | `GET /health` | 200 `{status:'ok'}` |
-| `GET /api/v1/platforms` | 200, 3 items |
+| `GET /api/v1/platforms` | 200, the 3 whole platforms with all five fields, as JSON (the same data as the unit test) |
 | `GET /api/v1/platforms/nope` | 404, our error shape |
-| `GET /api/v1/genres` | 200, 8 items |
+| `GET /api/v1/genres` | 200, the 8 genres, each with `slug`, `name` and `emoji` |
 | `GET /api/v1/nope?token=abc` | 404, body has no `token=abc` |
 | `GET /platforms` (no prefix) | 404 (the plain page if you accept it, our JSON if you add the catch-all) |
 | any response | no `X-Powered-By`; `X-Content-Type-Options: nosniff` present |

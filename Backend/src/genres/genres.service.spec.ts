@@ -12,7 +12,33 @@ describe('GenresService', () => {
     service = module.get<GenresService>(GenresService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('still has every genre we already have', () => {
+    expect(service.findAll().map((g) => g.slug)).toEqual(
+      expect.arrayContaining([
+        'action',
+        'rpg',
+        'shooter',
+        'sports',
+        'racing',
+        'strategy',
+        'horror',
+        'family',
+      ]),
+    );
+  });
+
+  it('has no duplicate genres', () => {
+    const slugs = service.findAll().map((g) => g.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
+  });
+
+  it('gives every genre the fields the frontend needs', () => {
+    for (const genre of service.findAll()) {
+      expect(genre).toEqual({
+        slug: expect.any(String),
+        name: expect.any(String),
+        emoji: expect.any(String),
+      });
+    }
   });
 });

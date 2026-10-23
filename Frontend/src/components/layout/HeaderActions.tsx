@@ -16,7 +16,12 @@ interface HeaderActionProps {
   children: ReactNode;
 }
 
-function HeaderAction({ label, count = 0, onClick, children }: HeaderActionProps) {
+function HeaderAction({
+  label,
+  count = 0,
+  onClick,
+  children,
+}: HeaderActionProps) {
   return (
     <button
       type="button"
@@ -63,7 +68,9 @@ export function HeaderActions({ className }: { className?: string }) {
             <span className="hidden lg:inline">Hi, {firstName}</span>
           </button>
           <div className="invisible absolute right-0 top-full z-50 w-48 translate-y-1 rounded-xl border border-line bg-surface p-1.5 text-ink opacity-0 shadow-pop transition group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-            <p className="truncate px-3 py-2 text-xs text-ink-muted">{user.email}</p>
+            <p className="truncate px-3 py-2 text-xs text-ink-muted">
+              {user.email}
+            </p>
             <button
               type="button"
               onClick={() => {
@@ -83,11 +90,19 @@ export function HeaderActions({ className }: { className?: string }) {
         </HeaderAction>
       )}
 
-      <HeaderAction label="Wishlist" count={wishlistCount} onClick={() => openModal("wishlist")}>
+      <HeaderAction
+        label="Wishlist"
+        count={wishlistCount}
+        onClick={() => openModal("wishlist")}
+      >
         <Heart size={22} aria-hidden />
       </HeaderAction>
 
-      <HeaderAction label="Cart" count={itemCount} onClick={() => openModal("cart")}>
+      <HeaderAction
+        label="Cart"
+        count={itemCount}
+        onClick={() => openModal("cart")}
+      >
         <ShoppingCart size={22} aria-hidden />
       </HeaderAction>
     </div>

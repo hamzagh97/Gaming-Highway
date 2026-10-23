@@ -25,7 +25,10 @@ export function SearchBox({ className }: { className?: string }) {
 
   useOnClickOutside(containerRef, () => setOpen(false), open);
 
-  const results = useMemo(() => searchProducts(debouncedQuery), [debouncedQuery]);
+  const results = useMemo(
+    () => searchProducts(debouncedQuery),
+    [debouncedQuery],
+  );
   const hasQuery = debouncedQuery.trim().length > 0;
 
   const close = () => {
@@ -90,23 +93,34 @@ export function SearchBox({ className }: { className?: string }) {
                         className="w-10 shrink-0 rounded-lg"
                       />
                       <span className="min-w-0 flex-1">
-                        <span className="line-clamp-1 text-sm font-semibold">{product.title}</span>
+                        <span className="line-clamp-1 text-sm font-semibold">
+                          {product.title}
+                        </span>
                         <span className="mt-0.5 flex items-center gap-2 text-xs text-ink-muted">
-                          <PlatformBadge platform={product.platform} className="px-1.5 py-0 text-[10px]" />
+                          <PlatformBadge
+                            platform={product.platform}
+                            className="px-1.5 py-0 text-[10px]"
+                          />
                           {product.publisher}
                         </span>
                       </span>
-                      <span className="shrink-0 text-sm font-bold">{formatPrice(product.price)}</span>
+                      <span className="shrink-0 text-sm font-bold">
+                        {formatPrice(product.price)}
+                      </span>
                     </Link>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="px-4 py-6 text-center text-sm text-ink-soft">No games match “{debouncedQuery.trim()}”.</p>
+              <p className="px-4 py-6 text-center text-sm text-ink-soft">
+                No games match “{debouncedQuery.trim()}”.
+              </p>
             )
           ) : (
             <div className="p-4">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-ink-muted">Popular searches</p>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-ink-muted">
+                Popular searches
+              </p>
               <div className="flex flex-wrap gap-2">
                 {popularSearches.map((term) => (
                   <button
@@ -129,7 +143,9 @@ export function SearchBox({ className }: { className?: string }) {
               className="flex items-center gap-2 border-t border-line px-4 py-3 text-sm font-bold text-accent transition hover:bg-surface-muted"
             >
               <Search size={16} aria-hidden />
-              <span className="min-w-0 truncate">Results for “{debouncedQuery.trim()}”</span>
+              <span className="min-w-0 truncate">
+                Results for “{debouncedQuery.trim()}”
+              </span>
             </Link>
           )}
         </div>

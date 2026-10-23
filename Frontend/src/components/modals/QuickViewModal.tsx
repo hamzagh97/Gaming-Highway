@@ -36,13 +36,20 @@ function QuickViewContent({ product }: { product: Product }) {
   const handleAdd = () => {
     const added = addItem(product.id, { quantity, variants });
     if (added === 0) {
-      toast("You already have the maximum of this game in your cart", { tone: "info" });
+      toast("You already have the maximum of this game in your cart", {
+        tone: "info",
+      });
       return;
     }
-    toast(added < quantity ? `Added ${added} (limit reached)` : `Added ${added} to your cart`, {
-      tone: "success",
-      action: { label: "View cart", onClick: () => openModal("cart") },
-    });
+    toast(
+      added < quantity
+        ? `Added ${added} (limit reached)`
+        : `Added ${added} to your cart`,
+      {
+        tone: "success",
+        action: { label: "View cart", onClick: () => openModal("cart") },
+      },
+    );
     closeModal();
   };
 

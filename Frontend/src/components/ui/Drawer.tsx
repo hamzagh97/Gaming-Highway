@@ -16,7 +16,14 @@ interface DrawerProps {
 }
 
 /** Full-height side panel with a scrollable body and an optional pinned footer. */
-export function Drawer({ open, onClose, title, side = "right", footer, children }: DrawerProps) {
+export function Drawer({
+  open,
+  onClose,
+  title,
+  side = "right",
+  footer,
+  children,
+}: DrawerProps) {
   return (
     <Overlay
       open={open}
@@ -36,7 +43,9 @@ export function Drawer({ open, onClose, title, side = "right", footer, children 
           </IconButton>
         </div>
         <div className="flex-1 overflow-y-auto">{children}</div>
-        {footer && <div className="border-t border-line bg-surface p-4">{footer}</div>}
+        {footer && (
+          <div className="border-t border-line bg-surface p-4">{footer}</div>
+        )}
       </div>
     </Overlay>
   );

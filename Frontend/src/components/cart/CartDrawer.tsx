@@ -21,8 +21,16 @@ export function CartDrawer() {
         <span className="text-sm text-ink-soft">Subtotal</span>
         <span className="text-lg font-extrabold">{formatPrice(subtotal)}</span>
       </div>
-      <p className="text-xs text-ink-muted">Your keys and accounts are sent by email after payment. Promo codes are applied at checkout.</p>
-      <ButtonLink href={ROUTES.checkout} size="lg" fullWidth onClick={closeModal}>
+      <p className="text-xs text-ink-muted">
+        Your keys and accounts are sent by email after payment. Promo codes are
+        applied at checkout.
+      </p>
+      <ButtonLink
+        href={ROUTES.checkout}
+        size="lg"
+        fullWidth
+        onClick={closeModal}
+      >
         Go to checkout
       </ButtonLink>
       <Button variant="outline" fullWidth onClick={closeModal}>
